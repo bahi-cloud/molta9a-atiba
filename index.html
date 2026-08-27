@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -196,7 +197,6 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
   </div>
   <div class="hdr-btns fx g2">
     <button class="btn btn-sm btn-tool" onclick="document.getElementById('toolsPopup').classList.toggle('open')">🧰 الأدوات</button>
-    <button class="btn btn-sm" onclick="openTestModal()">🧪 فحص النماذج</button>
     <button class="btn btn-sm" onclick="toggleSpk()" id="spkBtn">🔇 الصوت</button>
     <button class="btn btn-sm" onclick="cycleSpeed()" id="spdBtn">🚗 عادي</button>
     <button class="btn btn-sm" onclick="openSettings()">⚙️</button>
@@ -300,20 +300,6 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
 
 </div><!-- /app -->
 
-<!-- ══ MODEL TEST MODAL ══ -->
-<div class="overlay" id="testOverlay">
-  <div class="modal">
-    <h3>🧪 فحص النماذج المتاحة <button onclick="closeTestModal()" class="btn btn-sm" style="margin-right:auto;font-size:11px">✕ إغلاق</button></h3>
-    <p style="font-size:11px;color:var(--text3);margin-bottom:12px">اضغط "فحص الكل" لاختبار جميع النماذج بطلب بسيط ومعرفة أيها يستجيب بشكل صحيح مع مفتاحك.</p>
-    <div class="fx g2 mb2">
-      <button class="btn btn-gold f1" onclick="testAllModels()">🔄 فحص الكل</button>
-      <button class="btn btn-sm" onclick="closeTestModal()">إغلاق</button>
-    </div>
-    <div class="test-bar mb2"><div class="test-fill" id="testFill" style="width:0%"></div></div>
-    <div id="modelList"></div>
-  </div>
-</div>
-
 <!-- ══ SETTINGS MODAL ══ -->
 <div class="overlay" id="settingsOverlay">
   <div class="settings-modal">
@@ -330,10 +316,6 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
       <p id="keyStatus" style="font-size:11px;color:var(--text3);margin-top:4px"></p>
     </div>
     <div class="fg">
-      <label class="fl">📋 النموذج الافتراضي للمتخصصين</label>
-      <select id="defaultModelSel" class="sel" style="width:100%"></select>
-    </div>
-    <div class="fg">
       <label class="fl">🎤 سرعة الصوت: <span id="spdVal">1.0x</span></label>
       <input type="range" id="spdRange" min="0.5" max="2" step="0.1" value="1" style="width:100%;accent-color:var(--green)" oninput="speechSpd=parseFloat(this.value);document.getElementById('spdVal').textContent=this.value+'x'">
     </div>
@@ -343,35 +325,13 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
 
 <script>
 // ══════════════════════════════════════════════════
-// ALL NVIDIA AVAILABLE MODELS
+// ★ المزود والنموذج الوحيد ★
 // ══════════════════════════════════════════════════
-var ALL_MODELS = [
-  {id:'meta/llama-3.3-70b-instruct',      name:'Llama 3.3 70B'},
-  {id:'meta/llama-3.1-70b-instruct',      name:'Llama 3.1 70B'},
-  {id:'meta/llama-3.1-8b-instruct',       name:'Llama 3.1 8B'},
-  {id:'meta/llama-3.2-3b-instruct',       name:'Llama 3.2 3B'},
-  {id:'mistralai/mistral-7b-instruct-v0.3',name:'Mistral 7B v0.3'},
-  {id:'mistralai/mixtral-8x7b-instruct-v0.1',name:'Mixtral 8x7B'},
-  {id:'mistralai/mixtral-8x22b-instruct-v0.1',name:'Mixtral 8x22B'},
-  {id:'mistralai/mistral-large-2-instruct',name:'Mistral Large 2'},
-  {id:'deepseek-ai/deepseek-r1-distill-llama-70b',name:'DeepSeek R1 70B'},
-  {id:'deepseek-ai/deepseek-r1',           name:'DeepSeek R1 Full'},
-  {id:'nvidia/llama-3.1-nemotron-70b-instruct',name:'Nemotron 70B'},
-  {id:'nvidia/llama-3.3-nemotron-super-49b-v1',name:'Nemotron Super 49B'},
-  {id:'google/gemma-2-27b-it',             name:'Gemma 2 27B'},
-  {id:'google/gemma-2-9b-it',              name:'Gemma 2 9B'},
-  {id:'microsoft/phi-3-medium-128k-instruct',name:'Phi-3 Medium 128K'},
-  {id:'microsoft/phi-3-mini-128k-instruct',name:'Phi-3 Mini 128K'},
-  {id:'qwen/qwen2.5-72b-instruct',         name:'Qwen 2.5 72B'},
-  {id:'qwen/qwen2.5-7b-instruct',          name:'Qwen 2.5 7B'},
-  {id:'ibm/granite-3.0-8b-instruct',       name:'Granite 3.0 8B'},
-  {id:'01-ai/yi-large',                    name:'Yi Large'},
-];
-
+var API_URL = 'https://ayb-bh92-wep2app.hf.space/v1/chat/completions';
 var DEFAULT_MODEL = 'claude-opus-4-6';
 
-// ★ المزود الجديد
-var API_URL = 'https://ayb-bh92-wep2app.hf.space/v1/chat/completions';
+// ★ وقت الانتظار بين الوكيل والآخر (بالمللي ثانية)
+var AGENT_DELAY_MS = 1800;
 
 // ══════════════════════════════════════════════════
 // SPECIALISTS CONFIG
@@ -509,8 +469,7 @@ function updateRateBars(){
     var c=rCount(s.model);
     var p=Math.min(100,Math.round(c/40*100));
     var clr=p>=80?'#ef4444':p>=50?'#eab308':'#4a9e6b';
-    var mName=ALL_MODELS.find(function(mm){return mm.id===s.model});
-    html+='<div class="rate-item"><div class="rate-lbl"><span style="color:'+s.color+'">'+s.emoji+' '+s.name+'</span><span style="color:var(--text3)">'+c+'/40 ('+(mName?mName.name:s.model.split('/')[1])+')</span></div><div class="rate-track"><div class="rate-fill" style="width:'+p+'%;background:'+clr+'"></div></div></div>';
+    html+='<div class="rate-item"><div class="rate-lbl"><span style="color:'+s.color+'">'+s.emoji+' '+s.name+'</span><span style="color:var(--text3)">'+c+'/'+40+'</span></div><div class="rate-track"><div class="rate-fill" style="width:'+p+'%;background:'+clr+'"></div></div></div>';
   });
   el.innerHTML=html;
 }
@@ -531,7 +490,6 @@ async function loadTools(manual) {
   document.getElementById('toolsStatus').textContent = '⏳ جارٍ التحميل...';
   
   try {
-    // ★ استيراد الأدوات من الخادم
     var response = await fetch(getToolsBackendUrl() + '/tools', {
       headers: { 'Accept': 'application/json' }
     });
@@ -541,7 +499,6 @@ async function loadTools(manual) {
     var data = await response.json();
     var rawTools = data.tools || data || [];
     
-    // ★ تحويل إلى تنسيق موحد
     tools = rawTools.map(function(t) {
       var name = t.name || t.function?.name || 'unknown';
       var description = t.description || t.function?.description || '';
@@ -556,7 +513,6 @@ async function loadTools(manual) {
       };
     });
     
-    // ★ استيراد أسماء الأدوات المفعّلة
     try {
       var saved = localStorage.getItem('enabled_tool_names');
       if(saved) {
@@ -648,7 +604,6 @@ function closeToolsPopup() {
   document.getElementById('toolsPopup').classList.remove('open');
 }
 
-// ★ استدعاء الأدوات من الوكيل
 async function callBackendTool(name, args) {
   try {
     var response = await fetch(getToolsBackendUrl() + '/call', {
@@ -813,7 +768,7 @@ function setStatus(s,sid){
 // ══════════════════════════════════════════════════
 function getPrompt(sp){return sp.prompts[mode]||sp.prompts['diagnosis']}
 
-function callAPI(sp, msgs, toolCalls) {
+function callAPI(sp, msgs) {
   abortC = new AbortController();
   var body = {
     model: sp.model,
@@ -823,7 +778,6 @@ function callAPI(sp, msgs, toolCalls) {
     top_p: 0.9
   };
   
-  // ★ إضافة الأدوات المفعّلة
   var enabledTools = getEnabledTools();
   if(enabledTools.length > 0) {
     body.tools = enabledTools;
@@ -848,7 +802,6 @@ function callAPI(sp, msgs, toolCalls) {
     var choice = data.choices[0];
     var message = choice.message;
     
-    // ★ معالجة استدعاءات الأدوات
     if(message.tool_calls && message.tool_calls.length > 0) {
       return handleToolCalls(sp, msgs, message);
     }
@@ -866,7 +819,6 @@ async function handleToolCalls(sp, msgs, assistantMessage) {
   var toolCalls = assistantMessage.tool_calls || [];
   var toolResults = [];
   
-  // ★ تنفيذ كل أداة
   for(var i = 0; i < toolCalls.length; i++) {
     var tc = toolCalls[i];
     var fn = tc.function;
@@ -878,7 +830,6 @@ async function handleToolCalls(sp, msgs, assistantMessage) {
       args = {};
     }
     
-    // ★ التحقق من أن الأداة مفعّلة
     var toolEnabled = tools.some(function(t) { return t.name === toolName && t.enabled; });
     if(!toolEnabled) {
       toolResults.push({
@@ -890,11 +841,9 @@ async function handleToolCalls(sp, msgs, assistantMessage) {
     }
     
     try {
-      // ★ استدعاء الأداة من الباك اند
       var result = await callBackendTool(toolName, args);
       var resultStr = typeof result === 'string' ? result : JSON.stringify(result, null, 2);
       
-      // ★ عرض نتيجة الأداة في الدردشة
       addMsg('🔧 استخدمت أداة **' + toolName + '**:\n' + resultStr.slice(0, 500), sp.id, 'system');
       
       toolResults.push({
@@ -911,12 +860,10 @@ async function handleToolCalls(sp, msgs, assistantMessage) {
     }
   }
   
-  // ★ إعادة الاستدعاء مع نتائج الأدوات
   var newMsgs = msgs.slice();
   newMsgs.push({ role: 'assistant', content: assistantMessage.content || '', tool_calls: toolCalls });
   toolResults.forEach(function(tr) { newMsgs.push(tr); });
   
-  // ★ الطلب النهائي مع نتائج الأدوات
   var body = {
     model: sp.model,
     messages: [{role:'system',content:getPrompt(sp)}].concat(newMsgs),
@@ -1026,14 +973,17 @@ function sessionStep(){
     callAPI(sp,buildMsgs(sp)).then(function(resp){
       hideTyping();if(resp===null)return;if(!running||paused)return;
       var mid=addMsg(resp,sp.id,'bot');
-      if(globalSpk){return speakText(resp,sp,mid).then(function(){turn=(turn+1)%specs.length;setStatus('active');debTimer=setTimeout(sessionStep,getWait())})}
-      turn=(turn+1)%specs.length;setStatus('active');debTimer=setTimeout(sessionStep,getWait());
+      turn=(turn+1)%specs.length;
+      setStatus('active');
+      // ★ ★ ★ وقت الانتظار بين الوكيل والآخر ★ ★ ★
+      debTimer=setTimeout(sessionStep,AGENT_DELAY_MS);
+      if(globalSpk) return speakText(resp,sp,mid).then(function(){});
     }).catch(function(e){
       hideTyping();
       var em=e.message||'خطأ';
       if(em.indexOf('Failed to fetch')>=0)em='فشل الاتصال — تأكد من مفتاح API';
       addMsg('❌ ('+sp.name+'): '+em,null,'system');
-      turn=(turn+1)%specs.length;setStatus('active');debTimer=setTimeout(sessionStep,4000);
+      turn=(turn+1)%specs.length;setStatus('active');debTimer=setTimeout(sessionStep,AGENT_DELAY_MS);
     });
   };
   if(delay>0)setTimeout(doStep,delay);else doStep();
@@ -1049,7 +999,6 @@ function startSession(){
   if(!topic){var inp=document.getElementById('topicInp');inp.style.borderColor='var(--red)';setTimeout(function(){inp.style.borderColor='var(--border)'},2000);return}
   if(activeSpecs().length<2){sysMsg('⚠️ فعّل متخصصين على الأقل!');return}
   
-  // ★ تحميل الأدوات إذا لم تكن محملة
   if(!toolsLoaded && !toolsLoading) {
     loadTools(false);
   }
@@ -1069,7 +1018,7 @@ function startSession(){
 }
 
 function pauseSession(){if(!running)return;paused=true;if(abortC)try{abortC.abort()}catch(e){}if(debTimer)clearTimeout(debTimer);stopSpk();hideTyping();setStatus('paused');sysMsg('⏸ توقفت الاستشارة مؤقتاً')}
-function resumeSession(){if(!running||!paused)return;paused=false;setStatus('active');sysMsg('▶ تابعت الاستشارة');debTimer=setTimeout(sessionStep,1200)}
+function resumeSession(){if(!running||!paused)return;paused=false;setStatus('active');sysMsg('▶ تابعت الاستشارة');debTimer=setTimeout(sessionStep,AGENT_DELAY_MS)}
 
 function newSession(msg){
   running=false;paused=false;
@@ -1092,7 +1041,7 @@ function interrupt(){
   sysMsg('✋ المريض أضاف معلومة — المتخصصون يردّون...');
   var specs=activeSpecs();var idx=0;
   function next(){
-    if(idx>=Math.min(specs.length,3)){paused=false;setStatus('active');sysMsg('🔄 يعود النقاش التلقائي...');debTimer=setTimeout(sessionStep,2000);return}
+    if(idx>=Math.min(specs.length,3)){paused=false;setStatus('active');sysMsg('🔄 يعود النقاش التلقائي...');debTimer=setTimeout(sessionStep,AGENT_DELAY_MS);return}
     var sp=specs[idx++];
     if(!rCan(sp.model)){sysMsg('⏳ '+sp.name+' ينتظر...');next();return}
     showTyping(sp);setStatus('typing',sp.id);
@@ -1132,69 +1081,10 @@ function exportChat(){
 }
 
 // ══════════════════════════════════════════════════
-// MODEL TEST
-// ══════════════════════════════════════════════════
-var testResults={};
-
-function openTestModal(){
-  renderModelList();
-  document.getElementById('testOverlay').classList.add('open');
-}
-function closeTestModal(){document.getElementById('testOverlay').classList.remove('open')}
-
-function renderModelList(){
-  var html=ALL_MODELS.map(function(m){
-    var r=testResults[m.id];
-    var stClass=r===undefined?'ms-idle':r===null?'ms-testing':r?'ms-ok':'ms-fail';
-    var stIcon=r===undefined?'⭕':r===null?'⏳':r?'✅':'❌';
-    return '<div class="model-row" id="mrow-'+m.id.replace(/\//g,'_')+'">'+
-      '<div class="model-info">'+
-      '<div class="model-name">'+m.name+'</div>'+
-      '<div class="model-id">'+m.id+'</div>'+
-      '</div>'+
-      '<div class="model-status '+stClass+'" id="mst-'+m.id.replace(/\//g,'_')+'">'+stIcon+'</div>'+
-      '</div>';
-  }).join('');
-  document.getElementById('modelList').innerHTML=html;
-}
-
-async function testAllModels(){
-  if(!apiKey){showKeyMsg('❌ أدخل مفتاح API أولاً','#ef4444');openSettings();return}
-  document.getElementById('testFill').style.width='0%';
-  for(var i=0;i<ALL_MODELS.length;i++){
-    var m=ALL_MODELS[i];
-    var safeId=m.id.replace(/\//g,'_');
-    var stEl=document.getElementById('mst-'+safeId);
-    if(stEl){stEl.className='model-status ms-testing';stEl.textContent='⏳'}
-    testResults[m.id]=null;
-    try{
-      var resp=await fetch(API_URL,{
-        method:'POST',
-        headers:{'Content-Type':'application/json','Authorization':'Bearer '+apiKey},
-        body:JSON.stringify({model:m.id,messages:[{role:'user',content:'قل: مرحبا'}],max_tokens:20,temperature:0.1})
-      });
-      var data=await resp.json();
-      var ok=!!(data.choices&&data.choices[0]&&data.choices[0].message);
-      testResults[m.id]=ok;
-      if(stEl){stEl.className='model-status '+(ok?'ms-ok':'ms-fail');stEl.textContent=ok?'✅':'❌'}
-    }catch(e){
-      testResults[m.id]=false;
-      if(stEl){stEl.className='model-status ms-fail';stEl.textContent='❌'}
-    }
-    document.getElementById('testFill').style.width=Math.round((i+1)/ALL_MODELS.length*100)+'%';
-    await new Promise(function(r){setTimeout(r,400)});
-  }
-  var ok=Object.values(testResults).filter(function(v){return v===true}).length;
-  sysMsg('✅ فحص مكتمل: '+ok+' نموذج يعمل من أصل '+ALL_MODELS.length);
-}
-
-// ══════════════════════════════════════════════════
 // SETTINGS
 // ══════════════════════════════════════════════════
 function openSettings(){
   document.getElementById('apiKeyInp').value=apiKey||'';
-  var sel=document.getElementById('defaultModelSel');
-  sel.innerHTML=ALL_MODELS.map(function(m){return '<option value="'+m.id+'" '+(m.id===DEFAULT_MODEL?'selected':'')+'>'+m.name+'</option>'}).join('');
   document.getElementById('settingsOverlay').classList.add('open');
 }
 function closeSettings(){document.getElementById('settingsOverlay').classList.remove('open')}
@@ -1202,7 +1092,6 @@ function saveKey(){
   var k=document.getElementById('apiKeyInp').value.trim();
   if(!k){showKeyMsg('❌ أدخل المفتاح','#ef4444');return}
   apiKey=k;try{localStorage.setItem('med_key',k)}catch(e){}
-  DEFAULT_MODEL=document.getElementById('defaultModelSel').value;
   showKeyMsg('✅ تم الحفظ!','#4a9e6b');setTimeout(closeSettings,1000);
 }
 function showKeyMsg(m,c){var e=document.getElementById('keyStatus');if(e){e.textContent=m;e.style.color=c;setTimeout(function(){e.textContent=''},3000)}}
@@ -1232,8 +1121,6 @@ renderChips();
 updateRateBars();
 onModeChange('diagnosis');
 
-// ★ إضافة أدوات التفعيل في الواجهة
-// إضافة زر تحديث الأدوات
 var toolsPopup = document.querySelector('.tools-popup .phdr');
 if(toolsPopup) {
   var reloadBtn = document.createElement('button');
@@ -1243,14 +1130,12 @@ if(toolsPopup) {
   toolsPopup.appendChild(reloadBtn);
 }
 
-// ★ تحميل الأدوات في الخلفية
 setTimeout(function() {
   if(!toolsLoaded && !toolsLoading) {
     loadTools(false);
   }
 }, 2000);
 
-// ★ إضافة badge لعدد الأدوات المفعّلة
 var toolbar = document.querySelector('.hdr-btns');
 if(toolbar) {
   var badge = document.createElement('span');
@@ -1263,3 +1148,4 @@ if(toolbar) {
 </script>
 </body>
 </html>
+```
