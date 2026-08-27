@@ -1,0 +1,1265 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ملتقى الأطباء والحكماء — مع الأدوات</title>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#080d0a;--bg2:#0d1510;--bg3:#111a14;--bg4:#162019;
+  --border:rgba(134,187,140,.12);--border2:rgba(134,187,140,.22);
+  --gold:#c9a84c;--gold2:#e8c96d;--green:#4a9e6b;--green2:#6bc98a;
+  --teal:#2d9e8f;--amber:#c87c2a;--red:#c84a4a;--purple:#7c5cbf;
+  --text:#dde8d8;--text2:rgba(221,232,216,.6);--text3:rgba(221,232,216,.35);
+  --r:12px;--r2:18px;--sh:0 8px 32px rgba(0,0,0,.6);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:8px;
+  background-image:radial-gradient(ellipse at 20% 20%,rgba(74,158,107,.06) 0%,transparent 50%),
+                   radial-gradient(ellipse at 80% 80%,rgba(201,168,76,.05) 0%,transparent 50%)}
+
+.app{max-width:920px;margin:0 auto;display:flex;flex-direction:column;gap:10px}
+
+/* ── PANELS ── */
+.panel{background:rgba(13,21,16,.85);backdrop-filter:blur(16px);border:1px solid var(--border);border-radius:var(--r2);padding:12px;position:relative}
+.panel::before{content:'';position:absolute;inset:0;border-radius:var(--r2);background:linear-gradient(135deg,rgba(74,158,107,.04),transparent 60%);pointer-events:none}
+
+/* ── HEADER ── */
+.hdr{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.logo-wrap{display:flex;align-items:center;gap:10px}
+.logo-icon{font-size:28px;filter:drop-shadow(0 0 12px rgba(201,168,76,.5))}
+.logo-text{font-family:'Amiri',serif;font-size:18px;font-weight:700;
+  background:linear-gradient(90deg,var(--gold),var(--green2),var(--gold2));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-size:200% auto;animation:shimmer 4s linear infinite}
+.logo-sub{font-size:10px;color:var(--text3);font-family:'Cairo',sans-serif;display:block;margin-top:-2px}
+@keyframes shimmer{to{background-position:200% center}}
+.hdr-btns{display:flex;gap:6px}
+
+/* ── BUTTONS ── */
+.btn{cursor:pointer;border:none;outline:none;font-family:'Cairo',sans-serif;font-weight:700;border-radius:10px;font-size:13px;transition:all .15s;display:inline-flex;align-items:center;gap:5px}
+.btn:active{transform:scale(.97)}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+.btn-main{background:linear-gradient(135deg,#2d6e47,#4a9e6b);color:#fff;padding:10px 20px;box-shadow:0 4px 16px rgba(74,158,107,.3)}
+.btn-main:hover{box-shadow:0 6px 24px rgba(74,158,107,.45);transform:translateY(-1px)}
+.btn-gold{background:linear-gradient(135deg,#8a6820,#c9a84c);color:#fff;padding:9px 16px;box-shadow:0 4px 16px rgba(201,168,76,.3)}
+.btn-sm{background:rgba(255,255,255,.06);color:var(--text2);padding:6px 12px;font-size:12px;border:1px solid var(--border)}
+.btn-sm:hover{background:rgba(255,255,255,.1);color:var(--text)}
+.btn-red{background:rgba(200,74,74,.15);color:#f87171;border:1px solid rgba(200,74,74,.3);padding:6px 12px;font-size:12px}
+.btn-teal{background:rgba(45,158,143,.15);color:#5eead4;border:1px solid rgba(45,158,143,.3);padding:7px 14px;font-size:12px}
+.btn-tool{background:rgba(45,158,143,.12);color:#5eead4;border:1px solid rgba(45,158,143,.25);padding:7px 14px;font-size:12px}
+.btn-tool:hover{background:rgba(45,158,143,.2);border-color:rgba(45,158,143,.4)}
+
+/* ── INPUTS ── */
+.inp{background:rgba(0,0,0,.4);color:var(--text);border:1px solid var(--border);border-radius:10px;padding:10px 14px;font-size:14px;font-family:'Cairo',sans-serif;outline:none;width:100%;transition:border .2s}
+.inp:focus{border-color:rgba(74,158,107,.5);box-shadow:0 0 0 3px rgba(74,158,107,.1)}
+.inp::placeholder{color:var(--text3)}
+.sel{background:rgba(0,0,0,.5);color:var(--text);border:1px solid var(--border);border-radius:10px;padding:9px 14px;font-size:13px;font-family:'Cairo',sans-serif;outline:none;cursor:pointer;transition:border .2s}
+.sel:focus{border-color:rgba(74,158,107,.5)}
+.sel option{background:#0d1510;color:var(--text)}
+
+/* ── SPECIALIST CHIPS ── */
+.chips-wrap{overflow-x:auto;padding:4px 0}
+.chips-wrap::-webkit-scrollbar{height:3px}
+.chips-wrap::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+.chips-row{display:flex;gap:8px;width:max-content}
+.chip{display:flex;align-items:center;gap:6px;padding:8px 12px;border-radius:12px;cursor:pointer;border:2px solid transparent;background:rgba(0,0,0,.35);transition:all .2s;user-select:none}
+.chip.on{opacity:1}
+.chip.off{opacity:.28}
+.chip-em{font-size:18px}
+.chip-nm{font-size:11px;font-weight:700;white-space:nowrap}
+.chip-ck{width:15px;height:15px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:9px;border:2px solid #555;flex-shrink:0}
+.chip.on .chip-ck{background:rgba(255,255,255,.15)}
+
+/* ── CHAT ── */
+.chat-box{height:50vh;overflow-y:auto;display:flex;flex-direction:column;gap:10px;padding:4px}
+.chat-box::-webkit-scrollbar{width:4px}
+.chat-box::-webkit-scrollbar-thumb{background:rgba(74,158,107,.2);border-radius:2px}
+
+/* ── MESSAGES ── */
+.msg{border-radius:12px;padding:11px 13px;animation:slideIn .3s ease;border-right:3px solid}
+.msg-sys{background:rgba(201,168,76,.06);border:1px dashed rgba(201,168,76,.25);border-right:none;text-align:center;padding:6px;border-radius:8px;animation:fadeUp .3s}
+.msg-sys span{font-size:11px;color:rgba(201,168,76,.8)}
+.msg-summary{border-radius:12px;padding:12px 14px;animation:slideIn .3s;border:1px solid rgba(74,158,107,.3);background:rgba(74,158,107,.06)!important;position:relative}
+.msg-summary::before{content:'📋 ملخص التشخيص';position:absolute;top:-10px;right:14px;background:#080d0a;padding:2px 10px;border-radius:20px;font-size:10px;font-weight:700;color:var(--green2);border:1px solid rgba(74,158,107,.3)}
+.msg-header{display:flex;align-items:center;gap:7px;margin-bottom:5px;flex-wrap:wrap}
+.msg-avatar{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;border:2px solid}
+.msg-name{font-size:12px;font-weight:700}
+.msg-time{font-size:10px;color:var(--text3)}
+.msg-spk{background:none;border:none;cursor:pointer;font-size:11px;padding:2px 6px;color:var(--text3);margin-right:auto;border-radius:6px;transition:all .15s}
+.msg-spk:hover{color:var(--text2);background:rgba(255,255,255,.06)}
+.msg-text{font-size:13px;color:var(--text);line-height:1.75}
+.diagnosis-tag{display:inline-flex;align-items:center;gap:4px;background:rgba(74,158,107,.12);border:1px solid rgba(74,158,107,.25);border-radius:6px;padding:3px 8px;font-size:10px;font-weight:700;color:var(--green2);margin-top:6px;margin-left:4px}
+@keyframes slideIn{from{opacity:0;transform:translateX(10px)}to{opacity:1;transform:translateX(0)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── TYPING ── */
+.typing-bar{display:none;padding:4px 6px}
+.typing-bar.show{display:flex}
+.typing-inner{display:flex;align-items:center;gap:7px;background:rgba(0,0,0,.4);border-radius:10px;padding:7px 12px;border:1px solid var(--border)}
+.dot{display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--green2);animation:bounce 1.4s infinite}
+.dot:nth-child(2){animation-delay:.2s}.dot:nth-child(3){animation-delay:.4s}
+@keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-5px)}}
+
+/* ── STATUS ── */
+.status-bar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px}
+.s-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.s-txt{font-size:11px;color:var(--text2)}
+.wave{display:none;align-items:center;gap:2px}
+.wave.show{display:flex}
+.wave-b{width:3px;border-radius:3px;background:var(--green2);animation:wv .8s ease-in-out infinite}
+.wave-b:nth-child(2){animation-delay:.1s}.wave-b:nth-child(3){animation-delay:.2s}.wave-b:nth-child(4){animation-delay:.3s}
+@keyframes wv{0%,100%{height:5px}50%{height:15px}}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(74,158,107,.4)}70%{box-shadow:0 0 0 7px transparent}100%{box-shadow:0 0 0 0 transparent}}
+.pulsing{animation:pulse 2s infinite}
+
+/* ── TOOLS POPUP ── */
+.tools-popup{position:absolute;bottom:65px;right:0;width:min(400px,calc(100vw - 30px));background:rgba(13,21,16,.98);border:1px solid var(--border2);border-radius:var(--r2);padding:14px;max-height:380px;overflow-y:auto;box-shadow:var(--sh);z-index:100;backdrop-filter:blur(18px);display:none}
+.tools-popup.open{display:block;animation:fadeUp .2s}
+.tools-popup .phdr{display:flex;justify-content:space-between;align-items:center;padding-bottom:10px;border-bottom:1px solid var(--border);margin-bottom:10px}
+.tools-popup .phdr span{font-size:13px;font-weight:700;color:var(--green2)}
+.trow{display:flex;gap:8px;align-items:center;padding:8px 10px;border-bottom:1px solid var(--border-soft);transition:background .15s}
+.trow:hover{background:rgba(255,255,255,.02)}
+.trow .tinfo{flex:1;min-width:0}
+.trow .tname{font-size:11.5px;font-weight:600;direction:ltr;text-align:right}
+.trow .tdesc{font-size:10px;color:var(--text3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.trow .tcat{font-size:9px;color:var(--text3);background:rgba(255,255,255,.04);border-radius:4px;padding:1px 6px;margin-right:4px}
+.tools-empty{padding:16px;text-align:center;color:var(--text3);font-size:12px}
+.trow .switch{position:relative;width:34px;height:20px;flex-shrink:0}
+.trow .switch input{opacity:0;width:0;height:0}
+.trow .slider{position:absolute;inset:0;background:rgba(255,255,255,.1);border-radius:20px;cursor:pointer;transition:.2s}
+.trow .slider::before{content:'';position:absolute;width:14px;height:14px;border-radius:50%;background:#666;top:3px;right:3px;transition:.2s}
+.trow .switch input:checked+.slider{background:var(--teal)}
+.trow .switch input:checked+.slider::before{background:#fff;transform:translateX(-14px)}
+.tools-popup .pfoot{display:flex;gap:8px;padding-top:10px;border-top:1px solid var(--border);margin-top:6px;flex-wrap:wrap}
+.tools-popup .pfoot .btn{font-size:10px;padding:4px 10px}
+
+/* ── RATE BARS ── */
+.rate-item{margin-bottom:5px}
+.rate-lbl{display:flex;justify-content:space-between;font-size:10px;margin-bottom:2px}
+.rate-track{height:4px;background:rgba(255,255,255,.05);border-radius:4px;overflow:hidden}
+.rate-fill{height:100%;border-radius:4px;transition:width .4s}
+
+/* ── MODEL TEST MODAL ── */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:200;display:none;align-items:center;justify-content:center;backdrop-filter:blur(6px)}
+.overlay.open{display:flex}
+.modal{background:linear-gradient(135deg,var(--bg2),var(--bg3));border:1px solid var(--border2);border-radius:var(--r2);width:94%;max-width:500px;max-height:85vh;overflow-y:auto;padding:20px;box-shadow:var(--sh)}
+.modal h3{font-size:15px;font-weight:800;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.model-row{display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:rgba(255,255,255,.03);border-radius:8px;margin-bottom:5px;border:1px solid var(--border)}
+.model-info{flex:1}
+.model-name{font-size:12px;font-weight:700;color:var(--text)}
+.model-id{font-size:9px;color:var(--text3);font-family:monospace;direction:ltr}
+.model-status{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;transition:all .3s}
+.ms-idle{background:rgba(255,255,255,.05)}
+.ms-testing{background:rgba(201,168,76,.15);animation:pulse 1s infinite}
+.ms-ok{background:rgba(74,158,107,.2);color:var(--green2)}
+.ms-fail{background:rgba(200,74,74,.2);color:#f87171}
+.test-bar{width:100%;background:rgba(255,255,255,.05);border-radius:4px;height:3px;margin-top:4px;overflow:hidden}
+.test-fill{height:100%;background:linear-gradient(90deg,var(--green),var(--green2));border-radius:4px;transition:width .3s}
+
+/* ── SETTINGS MODAL ── */
+.settings-modal{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);width:94%;max-width:460px;max-height:86vh;overflow-y:auto;padding:18px;box-shadow:var(--sh)}
+.fg{margin-bottom:12px}
+.fl{font-size:11px;font-weight:700;color:var(--text2);margin-bottom:5px;display:block}
+
+/* ── DISCLAIMER ── */
+.disclaimer{text-align:center;padding:8px 12px;background:rgba(200,124,42,.06);border:1px solid rgba(200,124,42,.15);border-radius:10px}
+.disclaimer p{font-size:10px;color:rgba(200,124,42,.7);line-height:1.5}
+
+/* topic+mode */
+.topic-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.topic-row .inp{flex:1;min-width:180px}
+.mode-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px}
+.mode-lbl{font-size:11px;font-weight:700;color:var(--text2);white-space:nowrap}
+.int-row{display:flex;gap:8px;position:relative}
+.int-row .inp{flex:1}
+
+/* flex utils */
+.fx{display:flex}.aic{align-items:center}.jcb{justify-content:space-between}
+.g1{gap:4px}.g2{gap:8px}.g3{gap:12px}.f1{flex:1}.fs0{flex-shrink:0}
+.mb2{margin-bottom:8px}.txc{text-align:center}.mt1{margin-top:6px}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- ══ HEADER ══ -->
+<div class="panel hdr">
+  <div class="logo-wrap">
+    <span class="logo-icon">🌿</span>
+    <div>
+      <span class="logo-text">ملتقى الأطباء والحكماء</span>
+      <span class="logo-sub">استشارة طبية متكاملة مع أدوات ذكية</span>
+    </div>
+  </div>
+  <div class="hdr-btns fx g2">
+    <button class="btn btn-sm btn-tool" onclick="document.getElementById('toolsPopup').classList.toggle('open')">🧰 الأدوات</button>
+    <button class="btn btn-sm" onclick="openTestModal()">🧪 فحص النماذج</button>
+    <button class="btn btn-sm" onclick="toggleSpk()" id="spkBtn">🔇 الصوت</button>
+    <button class="btn btn-sm" onclick="cycleSpeed()" id="spdBtn">🚗 عادي</button>
+    <button class="btn btn-sm" onclick="openSettings()">⚙️</button>
+  </div>
+</div>
+
+<!-- ══ TOOLS POPUP ══ -->
+<div class="tools-popup" id="toolsPopup">
+  <div class="phdr">
+    <span>🧰 أدوات الباك اند</span>
+    <button class="btn btn-sm" onclick="loadTools(true)">⟳ إعادة السحب</button>
+  </div>
+  <div id="toolsList"><div class="tools-empty">⏳ جارٍ سحب الأدوات...</div></div>
+  <div class="pfoot">
+    <span style="font-size:10px;color:var(--text3);flex:1" id="toolsStatus">🔌 جاهز</span>
+    <button class="btn btn-sm" onclick="closeToolsPopup()">✕ إغلاق</button>
+  </div>
+</div>
+
+<!-- ══ SPECIALISTS ══ -->
+<div class="panel" style="padding:10px 12px">
+  <div style="font-size:11px;font-weight:700;color:var(--text3);margin-bottom:7px">👨‍⚕️ اختر المتخصصين المشاركين:</div>
+  <div class="chips-wrap"><div class="chips-row" id="chipsRow"></div></div>
+</div>
+
+<!-- ══ SYMPTOMS + MODE ══ -->
+<div class="panel">
+  <div class="topic-row">
+    <input type="text" id="topicInp" class="inp" placeholder="صف الأعراض أو المشكلة الصحية..." onkeydown="if(event.key==='Enter')startSession()">
+    <button class="btn btn-main fs0" onclick="startSession()">🩺 ابدأ الاستشارة</button>
+  </div>
+  <div class="mode-row">
+    <span class="mode-lbl">🎯 نوع الاستشارة:</span>
+    <select id="modesel" class="sel" style="flex:1;min-width:180px" onchange="onModeChange(this.value)">
+      <option value="diagnosis">🔍 تشخيص الأعراض وإيجاد الأسباب</option>
+      <option value="treatment">💊 خيارات العلاج والدواء</option>
+      <option value="herbal">🌿 الطب الطبيعي والأعشاب</option>
+      <option value="prevention">🛡️ الوقاية وتعزيز المناعة</option>
+      <option value="nutrition">🥗 التغذية والحمية الصحية</option>
+      <option value="emergency">🚨 حالة طارئة — ماذا أفعل؟</option>
+      <option value="chronic">📋 إدارة الأمراض المزمنة</option>
+    </select>
+    <button class="btn btn-gold fs0" onclick="triggerSummary()">📋 ملخص الآن</button>
+  </div>
+</div>
+
+<!-- ══ STATUS ══ -->
+<div class="panel status-bar" style="padding:8px 12px">
+  <div class="fx aic g2">
+    <div class="s-dot" id="sDot" style="background:#555"></div>
+    <span class="s-txt" id="sTxt">في انتظار بدء الاستشارة...</span>
+    <div class="wave" id="waveEl">
+      <div class="wave-b"></div><div class="wave-b"></div><div class="wave-b"></div><div class="wave-b"></div>
+    </div>
+  </div>
+  <div class="fx g2">
+    <button onclick="pauseSession()" id="pauseBtn" disabled class="btn btn-sm" style="color:#fbbf24">⏸</button>
+    <button onclick="resumeSession()" id="resumeBtn" disabled class="btn btn-sm" style="color:var(--green2)">▶</button>
+    <button onclick="newSession()" class="btn btn-sm" style="color:#f87171">🔄 جديد</button>
+    <button onclick="exportChat()" class="btn btn-sm" style="color:#a78bfa">📥 تصدير</button>
+  </div>
+</div>
+
+<!-- ══ CHAT ══ -->
+<div class="panel" style="padding:8px">
+  <div class="chat-box" id="chatBox">
+    <div class="txc" id="welcomeMsg" style="padding:36px 10px">
+      <div style="font-size:46px;margin-bottom:10px;filter:drop-shadow(0 0 20px rgba(74,158,107,.4))">🌿</div>
+      <div style="font-size:15px;font-weight:700;color:var(--text2);margin-bottom:5px;font-family:'Amiri',serif">ملتقى الأطباء والحكماء</div>
+      <div style="font-size:11px;color:var(--text3);max-width:320px;margin:0 auto;line-height:1.7">صف أعراضك، اختر نوع الاستشارة واضغط "ابدأ" — سيتداول المتخصصون في حالتك</div>
+    </div>
+  </div>
+  <div class="typing-bar" id="typingBar">
+    <div class="typing-inner">
+      <span id="tEmoji" style="font-size:15px">🩺</span>
+      <span id="tName" style="font-size:11px;font-weight:700;color:var(--green2)">الطبيب</span>
+      <span style="font-size:11px;color:var(--text3)">يفكر</span>
+      <div class="fx g1" style="margin-right:4px"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ INTERRUPT ══ -->
+<div class="panel">
+  <div class="int-row">
+    <input type="text" id="intInp" class="inp" placeholder="اسأل سؤالاً أو أضف معلومة..." onkeydown="if(event.key==='Enter')interrupt()">
+    <button onclick="interrupt()" class="btn fs0" style="background:linear-gradient(135deg,#2d4a3a,#3d6b50);color:#fff;padding:9px 14px;border-radius:10px;font-size:13px">✋ أضف</button>
+  </div>
+</div>
+
+<!-- ══ RATE BARS ══ -->
+<div class="panel" style="padding:10px 14px">
+  <div style="font-size:10px;font-weight:700;color:var(--text3);margin-bottom:6px">📊 استخدام النماذج (40 طلب/دقيقة)</div>
+  <div id="rateBars"></div>
+</div>
+
+<!-- ══ DISCLAIMER ══ -->
+<div class="disclaimer">
+  <p>⚕️ هذا التطبيق للاستئناس والمعلومات العامة فقط — لا يُغني عن مراجعة الطبيب المختص. في حالات الطوارئ اتصل بالإسعاف فوراً.</p>
+</div>
+
+</div><!-- /app -->
+
+<!-- ══ MODEL TEST MODAL ══ -->
+<div class="overlay" id="testOverlay">
+  <div class="modal">
+    <h3>🧪 فحص النماذج المتاحة <button onclick="closeTestModal()" class="btn btn-sm" style="margin-right:auto;font-size:11px">✕ إغلاق</button></h3>
+    <p style="font-size:11px;color:var(--text3);margin-bottom:12px">اضغط "فحص الكل" لاختبار جميع النماذج بطلب بسيط ومعرفة أيها يستجيب بشكل صحيح مع مفتاحك.</p>
+    <div class="fx g2 mb2">
+      <button class="btn btn-gold f1" onclick="testAllModels()">🔄 فحص الكل</button>
+      <button class="btn btn-sm" onclick="closeTestModal()">إغلاق</button>
+    </div>
+    <div class="test-bar mb2"><div class="test-fill" id="testFill" style="width:0%"></div></div>
+    <div id="modelList"></div>
+  </div>
+</div>
+
+<!-- ══ SETTINGS MODAL ══ -->
+<div class="overlay" id="settingsOverlay">
+  <div class="settings-modal">
+    <div class="fx aic jcb mb2">
+      <span style="font-size:15px;font-weight:800">⚙️ الإعدادات</span>
+      <button onclick="closeSettings()" class="btn btn-sm">✕</button>
+    </div>
+    <div class="fg">
+      <label class="fl">🔑 مفتاح NVIDIA NIM API</label>
+      <div class="fx g2">
+        <input type="password" id="apiKeyInp" placeholder="nvapi-..." dir="ltr" class="inp" style="font-size:12px">
+        <button onclick="saveKey()" class="btn btn-main fs0" style="padding:9px 14px">حفظ</button>
+      </div>
+      <p id="keyStatus" style="font-size:11px;color:var(--text3);margin-top:4px"></p>
+    </div>
+    <div class="fg">
+      <label class="fl">📋 النموذج الافتراضي للمتخصصين</label>
+      <select id="defaultModelSel" class="sel" style="width:100%"></select>
+    </div>
+    <div class="fg">
+      <label class="fl">🎤 سرعة الصوت: <span id="spdVal">1.0x</span></label>
+      <input type="range" id="spdRange" min="0.5" max="2" step="0.1" value="1" style="width:100%;accent-color:var(--green)" oninput="speechSpd=parseFloat(this.value);document.getElementById('spdVal').textContent=this.value+'x'">
+    </div>
+    <p style="font-size:10px;color:var(--text3);text-align:center;margin-top:8px">احصل على مفتاح مجاني من <a href="https://build.nvidia.com" target="_blank" style="color:var(--green2)">build.nvidia.com</a></p>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════
+// ALL NVIDIA AVAILABLE MODELS
+// ══════════════════════════════════════════════════
+var ALL_MODELS = [
+  {id:'meta/llama-3.3-70b-instruct',      name:'Llama 3.3 70B'},
+  {id:'meta/llama-3.1-70b-instruct',      name:'Llama 3.1 70B'},
+  {id:'meta/llama-3.1-8b-instruct',       name:'Llama 3.1 8B'},
+  {id:'meta/llama-3.2-3b-instruct',       name:'Llama 3.2 3B'},
+  {id:'mistralai/mistral-7b-instruct-v0.3',name:'Mistral 7B v0.3'},
+  {id:'mistralai/mixtral-8x7b-instruct-v0.1',name:'Mixtral 8x7B'},
+  {id:'mistralai/mixtral-8x22b-instruct-v0.1',name:'Mixtral 8x22B'},
+  {id:'mistralai/mistral-large-2-instruct',name:'Mistral Large 2'},
+  {id:'deepseek-ai/deepseek-r1-distill-llama-70b',name:'DeepSeek R1 70B'},
+  {id:'deepseek-ai/deepseek-r1',           name:'DeepSeek R1 Full'},
+  {id:'nvidia/llama-3.1-nemotron-70b-instruct',name:'Nemotron 70B'},
+  {id:'nvidia/llama-3.3-nemotron-super-49b-v1',name:'Nemotron Super 49B'},
+  {id:'google/gemma-2-27b-it',             name:'Gemma 2 27B'},
+  {id:'google/gemma-2-9b-it',              name:'Gemma 2 9B'},
+  {id:'microsoft/phi-3-medium-128k-instruct',name:'Phi-3 Medium 128K'},
+  {id:'microsoft/phi-3-mini-128k-instruct',name:'Phi-3 Mini 128K'},
+  {id:'qwen/qwen2.5-72b-instruct',         name:'Qwen 2.5 72B'},
+  {id:'qwen/qwen2.5-7b-instruct',          name:'Qwen 2.5 7B'},
+  {id:'ibm/granite-3.0-8b-instruct',       name:'Granite 3.0 8B'},
+  {id:'01-ai/yi-large',                    name:'Yi Large'},
+];
+
+var DEFAULT_MODEL = 'claude-opus-4-6';
+
+// ★ المزود الجديد
+var API_URL = 'https://ayb-bh92-wep2app.hf.space/v1/chat/completions';
+
+// ══════════════════════════════════════════════════
+// SPECIALISTS CONFIG
+// ══════════════════════════════════════════════════
+var SPECS = [
+  {
+    id:'gen',name:'الطبيب العام',emoji:'👨‍⚕️',color:'#4a9e6b',bg:'rgba(74,158,107,.1)',
+    model:DEFAULT_MODEL,on:true,
+    prompts:{
+      diagnosis: 'أنت طبيب عام ذو خبرة. حلّل الأعراض بمنهجية. اسأل عن: المدة، الشدة، الأعراض المرافقة، التاريخ المرضي. اقترح التشخيص الأرجح. مزيج فصحى وعامية طبيعية. 3-4 جمل.',
+      treatment: 'أنت طبيب عام. اقترح خيارات العلاج الطبية المناسبة مع الجرعات العامة. نبّه للحالات التي تستوجب الاستعجال. 3-4 جمل.',
+      herbal:    'أنت طبيب عام يؤمن بالتكامل بين الطب الحديث والطبيعي. قيّم الأعشاب المقترحة من منظور طبي. 3-4 جمل.',
+      prevention:'أنت طبيب وقائي. قدّم نصائح عملية لتقوية المناعة والوقاية. 3-4 جمل.',
+      nutrition: 'أنت طبيب مهتم بالتغذية. صمّم حمية غذائية مناسبة للحالة. 3-4 جمل.',
+      emergency: 'أنت طبيب طوارئ. قيّم خطورة الحالة فوراً وأعطِ تعليمات الإسعاف الأولي. 2-3 جمل حاسمة.',
+      chronic:   'أنت طبيب متابعة. ضع خطة إدارة طويلة المدى للحالة المزمنة. 3-4 جمل.'
+    }
+  },
+  {
+    id:'spec',name:'الطبيب المتخصص',emoji:'🏥',color:'#2d9e8f',bg:'rgba(45,158,143,.1)',
+    model:DEFAULT_MODEL,on:true,
+    prompts:{
+      diagnosis: 'أنت طبيب متخصص (باطنية/نوروفيولوجيا/قلب حسب الأعراض). قدّم تشخيصاً متخصصاً عميقاً واقترح الفحوصات الضرورية. 3-4 جمل.',
+      treatment: 'أنت طبيب متخصص. قدّم بروتوكول علاج متخصص مع الأدوية المحددة والمدة. 3-4 جمل.',
+      herbal:    'أنت طبيب متخصص. قيّم التداخلات المحتملة بين الأعشاب والأدوية المعتادة. 3-4 جمل.',
+      prevention:'أنت طبيب متخصص في الوقاية. قدّم برنامجاً وقائياً متخصصاً. 3-4 جمل.',
+      nutrition: 'أنت طبيب تغذية متخصص. قدّم خطة تغذية علاجية دقيقة. 3-4 جمل.',
+      emergency: 'أنت طبيب طوارئ متخصص. حدّد نوع الطوارئ وبروتوكول التدخل الصحيح. 3 جمل.',
+      chronic:   'أنت طبيب متخصص في الأمراض المزمنة. قدّم أحدث بروتوكولات الإدارة. 3-4 جمل.'
+    }
+  },
+  {
+    id:'herb',name:'العشّاب والطب النبوي',emoji:'🌿',color:'#8a9e4a',bg:'rgba(138,158,74,.1)',
+    model:DEFAULT_MODEL,on:true,
+    prompts:{
+      diagnosis: 'أنت خبير في الطب النبوي والأعشاب الطبيعية. فسّر الأعراض من منظور الطب العربي الإسلامي التراثي. اذكر الأعشاب والعلاجات النبوية المأثورة بأدلتها. 3-4 جمل.',
+      treatment: 'أنت عشّاب. اقترح علاجات بالأعشاب والحبة السوداء والعسل والزيوت. اذكر طريقة الاستخدام والجرعة. 3-4 جمل.',
+      herbal:    'أنت خبير أعشاب. فصّل الأعشاب المناسبة: الاسم العلمي، الفائدة، طريقة التحضير والاستخدام. 4-5 جمل.',
+      prevention:'أنت معلم صحة نبوية. قدّم السنن النبوية والممارسات الإسلامية للوقاية والصحة. 3-4 جمل.',
+      nutrition: 'أنت خبير تغذية طبيعية. قدّم نظاماً غذائياً من الأطعمة الطبيعية والمباركة. 3-4 جمل.',
+      emergency: 'أنت خبير إسعافات أولية طبيعية. قدّم الإجراءات الطبيعية الفورية مع التنبيه لحدود الطب الطبيعي. 3 جمل.',
+      chronic:   'أنت خبير طب طبيعي. قدّم برنامج علاج طبيعي متكامل للحالة المزمنة. 3-4 جمل.'
+    }
+  },
+  {
+    id:'energy',name:'معالج الطاقة',emoji:'✨',color:'#9b5cbf',bg:'rgba(155,92,191,.1)',
+    model:DEFAULT_MODEL,on:false,
+    prompts:{
+      diagnosis: 'أنت معالج بالطاقة والطب الشرقي. حلّل الأعراض من منظور التوازن الطاقي (الميريديان، الشاكرات، الأخلاط الأربعة). 3-4 جمل.',
+      treatment: 'أنت معالج بالطاقة. اقترح العلاج بالوخز بالإبر، الريكي، التأمل، التنفس العلاجي. 3-4 جمل.',
+      herbal:    'أنت معالج طاقة وأعشاب شرقية. اقترح علاجات الطب الصيني التقليدي والهندي الأيورفيدا. 3-4 جمل.',
+      prevention:'أنت معالج طاقة. قدّم تقنيات تنظيم الطاقة والوقاية الروحانية والجسدية. 3-4 جمل.',
+      nutrition: 'أنت معالج طاقة غذائية. صنّف الأطعمة حسب طاقتها وتأثيرها على الجسم والروح. 3-4 جمل.',
+      emergency: 'أنت معالج طاقة. قدّم تقنيات التهدئة الطاقية الفورية مع التنبيه لأولوية الطب الحديث في الطوارئ. 3 جمل.',
+      chronic:   'أنت معالج طاقة. قدّم برنامج توازن طاقي شامل للأمراض المزمنة. 3-4 جمل.'
+    }
+  },
+  {
+    id:'wise',name:'الحكيم التقليدي',emoji:'🧙',color:'#c9a84c',bg:'rgba(201,168,76,.1)',
+    model:DEFAULT_MODEL,on:false,
+    prompts:{
+      diagnosis: 'أنت حكيم تقليدي ذو خبرة عريقة. فسّر الأعراض من منظور الطب القديم والحكمة الشعبية المتوارثة. تحدث بأسلوب حكيم رصين. 3-4 جمل.',
+      treatment: 'أنت حكيم تقليدي. اقترح العلاجات الشعبية التراثية المجربة والمتوارثة. 3-4 جمل.',
+      herbal:    'أنت حكيم وعشّاب تقليدي. شارك تجاربك وحكمتك في العلاج بالنبات. 3-4 جمل.',
+      prevention:'أنت حكيم. قدّم الحكم والأمثال الصحية التراثية مع نصائح عملية. 3-4 جمل.',
+      nutrition: 'أنت حكيم تغذية تقليدية. قدّم الحكمة الغذائية القديمة المتوارثة. 3-4 جمل.',
+      emergency: 'أنت حكيم تقليدي. قدّم الإسعافات الشعبية الفورية مع التنبيه للطب الحديث. 3 جمل.',
+      chronic:   'أنت حكيم. شارك الحكمة التراثية في التعايش مع الأمراض المزمنة. 3-4 جمل.'
+    }
+  },
+  {
+    id:'psych',name:'الطبيب النفسي',emoji:'🧠',color:'#5c7fbf',bg:'rgba(92,127,191,.1)',
+    model:DEFAULT_MODEL,on:false,
+    prompts:{
+      diagnosis: 'أنت طبيب نفسي. قيّم الجانب النفسي للأعراض — هل لها ارتباط بالتوتر والقلق والاكتئاب؟ 3-4 جمل.',
+      treatment: 'أنت طبيب نفسي. اقترح التدخل النفسي المناسب: العلاج المعرفي السلوكي، الدواء إن لزم، تقنيات الاسترخاء. 3-4 جمل.',
+      herbal:    'أنت طبيب نفسي. قيّم الأعشاب المهدئة للجهاز العصبي من منظور علمي. 3-4 جمل.',
+      prevention:'أنت طبيب نفسي وقائي. قدّم استراتيجيات الصحة النفسية والمرونة. 3-4 جمل.',
+      nutrition: 'أنت طبيب نفسي. ربط التغذية بالصحة النفسية — أطعمة تُحسن المزاج والتركيز. 3-4 جمل.',
+      emergency: 'أنت طبيب نفسي طوارئ. قيّم الحالة النفسية وقدّم إرشادات الأزمة. 3 جمل.',
+      chronic:   'أنت طبيب نفسي. ادعم التكيف النفسي مع المرض المزمن وقدّم استراتيجيات المواجهة. 3-4 جمل.'
+    }
+  },
+  {
+    id:'sum',name:'الملخّص الطبي',emoji:'📋',color:'#c9a84c',bg:'rgba(201,168,76,.08)',
+    model:DEFAULT_MODEL,on:true,
+    isSummarizer:true, summaryEvery:5,
+    prompts:{
+      diagnosis: 'أنت ملخص طبي محترف. لخّص ما قاله المتخصصون: التشخيصات المقترحة بالترتيب، نقاط الاتفاق والاختلاف، الخطوات المقترحة. 5-7 جمل منظمة.',
+      treatment: 'أنت ملخص طبي. لخّص خيارات العلاج المقترحة مرتبةً حسب الأولوية والأمان. 5-7 جمل.',
+      herbal:    'أنت ملخص طبي. لخّص العلاجات الطبيعية المقترحة مع تقييم الأدلة لكل منها. 5-7 جمل.',
+      prevention:'أنت ملخص صحي. لخّص خطة الوقاية الشاملة من كل التخصصات. 5-7 جمل.',
+      nutrition: 'أنت ملخص تغذية. لخّص التوصيات الغذائية في جدول واضح: مسموح، ممنوع، مستحسن. 5-7 جمل.',
+      emergency: 'أنت ملخص طوارئ. لخّص الإجراءات الفورية بترتيب الأولوية. 4-5 جمل حاسمة.',
+      chronic:   'أنت ملخص إدارة أمراض مزمنة. لخّص الخطة المتكاملة: طبي، طبيعي، نفسي، غذائي. 6-8 جمل.'
+    }
+  }
+];
+
+// ══════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════
+var apiKey = '';
+try{apiKey=localStorage.getItem('med_key')||''}catch(e){}
+var globalSpk=false, speechSpd=1.0, spdMode='normal';
+var running=false, paused=false, topic='', mode='diagnosis';
+var hist=[], turn=0, msgN=0, msgsSinceSum=0;
+var abortC=null, debTimer=null, speaking=false, speakId=null;
+var MAX_HIST=16;
+
+// ★ TOOLS STATE
+var tools = [];
+var enabledToolNames = [];
+var toolsLoaded = false;
+var toolsLoading = false;
+
+// ══════════════════════════════════════════════════
+// RATE LIMITER
+// ══════════════════════════════════════════════════
+var rLog={};
+function rCount(m){if(!rLog[m])rLog[m]=[];var n=Date.now();rLog[m]=rLog[m].filter(function(t){return t>n-60000});return rLog[m].length}
+function rRec(m){if(!rLog[m])rLog[m]=[];rLog[m].push(Date.now())}
+function rCan(m){return rCount(m)<40}
+function rDly(m){var c=rCount(m);if(c>=36)return 6000;if(c>=30)return 4000;if(c>=24)return 2000;if(c>=18)return 1000;return 0}
+
+function updateRateBars(){
+  var el=document.getElementById('rateBars');
+  if(!el)return;
+  var actives=activeSpecs();
+  var seen={};
+  var html='';
+  actives.forEach(function(s){
+    if(seen[s.model])return;
+    seen[s.model]=true;
+    var c=rCount(s.model);
+    var p=Math.min(100,Math.round(c/40*100));
+    var clr=p>=80?'#ef4444':p>=50?'#eab308':'#4a9e6b';
+    var mName=ALL_MODELS.find(function(mm){return mm.id===s.model});
+    html+='<div class="rate-item"><div class="rate-lbl"><span style="color:'+s.color+'">'+s.emoji+' '+s.name+'</span><span style="color:var(--text3)">'+c+'/40 ('+(mName?mName.name:s.model.split('/')[1])+')</span></div><div class="rate-track"><div class="rate-fill" style="width:'+p+'%;background:'+clr+'"></div></div></div>';
+  });
+  el.innerHTML=html;
+}
+setInterval(updateRateBars,4000);
+
+// ══════════════════════════════════════════════════
+// TOOLS SYSTEM
+// ══════════════════════════════════════════════════
+
+function getToolsBackendUrl() {
+  return 'https://ayb-bh92-tools.hf.space';
+}
+
+async function loadTools(manual) {
+  if(toolsLoading) return;
+  toolsLoading = true;
+  document.getElementById('toolsList').innerHTML = '<div class="tools-empty">⏳ جارٍ سحب الأدوات...</div>';
+  document.getElementById('toolsStatus').textContent = '⏳ جارٍ التحميل...';
+  
+  try {
+    // ★ استيراد الأدوات من الخادم
+    var response = await fetch(getToolsBackendUrl() + '/tools', {
+      headers: { 'Accept': 'application/json' }
+    });
+    
+    if(!response.ok) throw new Error('HTTP ' + response.status);
+    
+    var data = await response.json();
+    var rawTools = data.tools || data || [];
+    
+    // ★ تحويل إلى تنسيق موحد
+    tools = rawTools.map(function(t) {
+      var name = t.name || t.function?.name || 'unknown';
+      var description = t.description || t.function?.description || '';
+      var parameters = t.parameters || t.function?.parameters || {};
+      var category = t.category || t.function?.category || 'General';
+      return {
+        name: name,
+        description: description,
+        parameters: parameters,
+        category: category,
+        enabled: enabledToolNames.includes(name)
+      };
+    });
+    
+    // ★ استيراد أسماء الأدوات المفعّلة
+    try {
+      var saved = localStorage.getItem('enabled_tool_names');
+      if(saved) {
+        enabledToolNames = JSON.parse(saved);
+        tools.forEach(function(t) {
+          t.enabled = enabledToolNames.includes(t.name);
+        });
+      }
+    } catch(e) {}
+    
+    toolsLoaded = true;
+    renderTools();
+    document.getElementById('toolsStatus').textContent = '✅ ' + tools.length + ' أداة متاحة';
+    if(manual) toast('✅ تم سحب ' + tools.length + ' أداة');
+    
+  } catch(error) {
+    document.getElementById('toolsList').innerHTML = '<div class="tools-empty">❌ تعذر سحب الأدوات: ' + escH(error.message) + '</div>';
+    document.getElementById('toolsStatus').textContent = '❌ فشل التحميل';
+    if(manual) toast('❌ فشل سحب الأدوات');
+    console.error('❌ Tools load error:', error);
+  }
+  
+  toolsLoading = false;
+}
+
+function renderTools() {
+  var container = document.getElementById('toolsList');
+  if(!tools.length) {
+    container.innerHTML = '<div class="tools-empty">📭 لا توجد أدوات عامة متاحة</div>';
+    return;
+  }
+  
+  var html = tools.map(function(t, i) {
+    return '<div class="trow">' +
+      '<div class="tinfo">' +
+      '<div class="tname">' + escH(t.name) + ' <span class="tcat">' + escH(t.category) + '</span></div>' +
+      '<div class="tdesc">' + escH(t.description || 'بدون وصف') + '</div>' +
+      '</div>' +
+      '<label class="switch">' +
+      '<input type="checkbox" ' + (t.enabled ? 'checked' : '') + ' onchange="toggleTool(' + i + ', this.checked)">' +
+      '<span class="slider"></span>' +
+      '</label>' +
+      '</div>';
+  }).join('');
+  
+  container.innerHTML = html;
+}
+
+function toggleTool(index, enabled) {
+  if(index < 0 || index >= tools.length) return;
+  tools[index].enabled = enabled;
+  if(enabled) {
+    if(!enabledToolNames.includes(tools[index].name)) {
+      enabledToolNames.push(tools[index].name);
+    }
+  } else {
+    enabledToolNames = enabledToolNames.filter(function(n) { return n !== tools[index].name; });
+  }
+  try { localStorage.setItem('enabled_tool_names', JSON.stringify(enabledToolNames)); } catch(e) {}
+  updateToolCount();
+}
+
+function getEnabledTools() {
+  return tools.filter(function(t) { return t.enabled; }).map(function(t) {
+    return {
+      type: 'function',
+      function: {
+        name: t.name,
+        description: t.description || '',
+        parameters: t.parameters || { type: 'object', properties: {} }
+      }
+    };
+  });
+}
+
+function updateToolCount() {
+  var count = tools.filter(function(t) { return t.enabled; }).length;
+  var badge = document.getElementById('toolCountBadge');
+  if(!badge) return;
+  if(count > 0) {
+    badge.style.display = 'inline';
+    badge.textContent = '🧰 ' + count + ' مفعّلة';
+  } else {
+    badge.style.display = 'none';
+  }
+}
+
+function closeToolsPopup() {
+  document.getElementById('toolsPopup').classList.remove('open');
+}
+
+// ★ استدعاء الأدوات من الوكيل
+async function callBackendTool(name, args) {
+  try {
+    var response = await fetch(getToolsBackendUrl() + '/call', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ tool: name, arguments: args || {} })
+    });
+    if(!response.ok) {
+      var errText = await response.text();
+      throw new Error('HTTP ' + response.status + ': ' + errText.slice(0, 200));
+    }
+    var data = await response.json();
+    return data.result || data;
+  } catch(error) {
+    console.error('❌ Tool call error:', error);
+    throw error;
+  }
+}
+
+// ══════════════════════════════════════════════════
+// CHIPS RENDER
+// ══════════════════════════════════════════════════
+function renderChips(){
+  var row=document.getElementById('chipsRow');
+  row.innerHTML=SPECS.map(function(s){
+    return '<div class="chip '+(s.on?'on':'off')+'" id="chip-'+s.id+'" onclick="toggleSpec(\''+s.id+'\')" style="border-color:'+(s.on?s.color:'transparent')+'">'
+      +'<span class="chip-em">'+s.emoji+'</span>'
+      +'<span class="chip-nm">'+s.name+'</span>'
+      +'<span class="chip-ck" id="ck-'+s.id+'" style="border-color:'+(s.on?s.color:'#555')+'">'+(s.on?'✓':'')+'</span>'
+      +'</div>';
+  }).join('');
+}
+
+function toggleSpec(id){
+  var s=SPECS.find(function(x){return x.id===id});
+  if(!s)return;
+  s.on=!s.on;
+  var actCnt=activeSpecs().length;
+  if(running&&actCnt<2&&!s.isSummarizer){s.on=true;sysMsg('⚠️ يجب أن يشارك متخصصان على الأقل!')}
+  renderChips();
+}
+
+function activeSpecs(){return SPECS.filter(function(s){return s.on&&!s.isSummarizer})}
+function getSummarizer(){return SPECS.find(function(s){return s.isSummarizer&&s.on})||null}
+function findSpec(id){return SPECS.find(function(s){return s.id===id})||null}
+
+// ══════════════════════════════════════════════════
+// SPEECH
+// ══════════════════════════════════════════════════
+function getArVoice(){try{var v=speechSynthesis.getVoices();for(var i=0;i<v.length;i++){if(v[i].lang&&v[i].lang.indexOf('ar')===0)return v[i]}}catch(e){}return null}
+try{speechSynthesis.onvoiceschanged=function(){speechSynthesis.getVoices()}}catch(e){}
+
+function speakText(txt,spec,mid){
+  return new Promise(function(resolve){
+    if(!globalSpk){resolve();return}
+    try{speechSynthesis.cancel()}catch(e){}
+    var u=new SpeechSynthesisUtterance(txt);
+    u.lang='ar-SA';u.pitch=1.0;u.rate=speechSpd;
+    var v=getArVoice();if(v)u.voice=v;
+    speaking=true;speakId=mid;showWave(true);
+    u.onend=function(){speaking=false;speakId=null;showWave(false);resolve()};
+    u.onerror=function(){speaking=false;speakId=null;showWave(false);resolve()};
+    speechSynthesis.speak(u);
+  });
+}
+function stopSpk(){try{speechSynthesis.cancel()}catch(e){}speaking=false;showWave(false);speakId=null}
+function showWave(on){var w=document.getElementById('waveEl');if(w){if(on)w.classList.add('show');else w.classList.remove('show')}}
+
+// ══════════════════════════════════════════════════
+// CHAT UI
+// ══════════════════════════════════════════════════
+function escH(t){var d=document.createElement('div');d.textContent=t;return d.innerHTML}
+
+function toast(text) {
+  var el = document.createElement('div');
+  el.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);z-index:300;background:rgba(13,21,16,.95);color:#dde8d8;border:1px solid rgba(134,187,140,.2);border-radius:12px;padding:10px 20px;font-size:13px;box-shadow:0 8px 32px rgba(0,0,0,.6);backdrop-filter:blur(12px);animation:fadeUp .2s';
+  el.textContent = text;
+  document.body.appendChild(el);
+  setTimeout(function() { el.remove(); }, 2800);
+}
+
+function sysMsg(txt){
+  var box=document.getElementById('chatBox');
+  var w=document.getElementById('welcomeMsg');if(w)w.remove();
+  var d=document.createElement('div');
+  d.className='msg-sys';
+  d.innerHTML='<span>'+txt+'</span>';
+  box.appendChild(d);box.scrollTop=box.scrollHeight;
+}
+
+function addMsg(txt,specId,type){
+  var box=document.getElementById('chatBox');
+  var w=document.getElementById('welcomeMsg');if(w)w.remove();
+  var id='m'+(++msgN);
+  var d=document.createElement('div');d.id=id;
+  if(type==='system'){d.className='msg-sys';d.innerHTML='<span>'+escH(txt)+'</span>';box.appendChild(d);box.scrollTop=box.scrollHeight;return id}
+  var isUser=(type==='user');
+  var isSummary=(type==='summary');
+  var sp=isUser?null:findSpec(specId);
+  var nm=isUser?'المريض':(sp?sp.name:'');
+  var em=isUser?'🙋':(sp?sp.emoji:'');
+  var bc=isUser?'#94a3b8':(sp?sp.color:'#888');
+  var bg=isUser?'rgba(148,163,184,.08)':(sp?sp.bg:'rgba(128,128,128,.08)');
+  if(isSummary){
+    d.className='msg msg-summary';d.style.background=bg;
+    d.innerHTML='<div class="msg-header"><div class="msg-avatar" style="background:'+bg+';border-color:'+bc+'">'+em+'</div><span class="msg-name" style="color:'+bc+'">'+nm+'</span></div><div class="msg-text" dir="rtl">'+escH(txt)+'</div>';
+  } else {
+    d.className='msg';d.style.background=bg;d.style.borderRightColor=bc;
+    var spkHtml=(!isUser&&sp)?'<button class="msg-spk" onclick="playMsg(\''+id+'\',\''+specId+'\')">🔊</button>':'';
+    var now=new Date();
+    var ts=now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0');
+    d.innerHTML='<div class="msg-header"><div class="msg-avatar" style="background:'+bg+';border-color:'+bc+'">'+em+'</div><span class="msg-name" style="color:'+bc+'">'+nm+'</span><span class="msg-time">'+ts+'</span>'+spkHtml+'</div><div class="msg-text" dir="rtl">'+escH(txt)+'</div>';
+  }
+  box.appendChild(d);box.scrollTop=box.scrollHeight;
+  if(!isUser){
+    hist.push({role:'assistant',content:'['+nm+']: '+txt,specId:specId,text:txt,name:nm});
+    if(hist.length>MAX_HIST)hist=hist.slice(-MAX_HIST);
+    msgsSinceSum++;
+  }
+  return id;
+}
+
+function playMsg(mid,sid){
+  var el=document.getElementById(mid);if(!el)return;
+  var p=el.querySelector('.msg-text');if(!p)return;
+  var sp=findSpec(sid);if(!sp)return;
+  if(speaking&&speakId===mid){stopSpk();return}
+  try{speechSynthesis.cancel()}catch(e){}
+  var u=new SpeechSynthesisUtterance(p.textContent);
+  u.lang='ar-SA';u.rate=speechSpd;var v=getArVoice();if(v)u.voice=v;
+  speaking=true;speakId=mid;showWave(true);
+  u.onend=function(){speaking=false;showWave(false)};
+  speechSynthesis.speak(u);
+}
+
+function showTyping(sp){
+  var bar=document.getElementById('typingBar');
+  document.getElementById('tEmoji').textContent=sp.emoji;
+  document.getElementById('tName').textContent=sp.name;
+  document.getElementById('tName').style.color=sp.color;
+  bar.classList.add('show');
+  document.getElementById('chatBox').scrollTop=9999;
+}
+function hideTyping(){document.getElementById('typingBar').classList.remove('show')}
+
+function setStatus(s,sid){
+  var dot=document.getElementById('sDot');
+  var txt=document.getElementById('sTxt');
+  var sp=sid?findSpec(sid):null;
+  var pb=document.getElementById('pauseBtn');
+  var rb=document.getElementById('resumeBtn');
+  if(s==='active'){dot.style.background='#4a9e6b';dot.className='s-dot pulsing';txt.style.color='#6bc98a';txt.textContent='🟢 الاستشارة جارية...';pb.disabled=false;rb.disabled=true}
+  else if(s==='paused'){dot.style.background='#c9a84c';dot.className='s-dot';txt.style.color='#e8c96d';txt.textContent='⏸ متوقفة مؤقتاً';pb.disabled=true;rb.disabled=false}
+  else if(s==='stopped'){dot.style.background='#555';dot.className='s-dot';txt.style.color='var(--text2)';txt.textContent='في انتظار بدء الاستشارة...';pb.disabled=true;rb.disabled=true}
+  else if(s==='typing'&&sp){dot.style.background=sp.color;dot.className='s-dot pulsing';txt.style.color=sp.color;txt.textContent=sp.emoji+' '+sp.name+' يفكر...'}
+  else if(s==='rateWait'){dot.style.background='#c87c2a';dot.className='s-dot';txt.style.color='#e8a870';txt.textContent='⏳ انتظار حد الطلبات...'}
+  else if(s==='summary'){dot.style.background='#c9a84c';dot.className='s-dot';txt.style.color='#e8c96d';txt.textContent='📋 يُعدّ ملخص الاستشارة...'}
+}
+
+// ══════════════════════════════════════════════════
+// API CALL — مع دعم الأدوات
+// ══════════════════════════════════════════════════
+function getPrompt(sp){return sp.prompts[mode]||sp.prompts['diagnosis']}
+
+function callAPI(sp, msgs, toolCalls) {
+  abortC = new AbortController();
+  var body = {
+    model: sp.model,
+    messages: [{role:'system',content:getPrompt(sp)}].concat(msgs),
+    temperature: 0.7,
+    max_tokens: 500,
+    top_p: 0.9
+  };
+  
+  // ★ إضافة الأدوات المفعّلة
+  var enabledTools = getEnabledTools();
+  if(enabledTools.length > 0) {
+    body.tools = enabledTools;
+    body.tool_choice = 'auto';
+  }
+  
+  return fetch(API_URL, {
+    method:'POST',
+    headers:{'Content-Type':'application/json','Authorization':'Bearer '+apiKey},
+    body:JSON.stringify(body),
+    signal:abortC.signal
+  })
+  .then(function(res){
+    if(!res.ok) return res.json().catch(function(){return{}}).then(function(d){
+      throw new Error(d.error && d.error.message ? d.error.message : 'HTTP '+res.status);
+    });
+    return res.json();
+  })
+  .then(function(data){
+    rRec(sp.model);
+    updateRateBars();
+    var choice = data.choices[0];
+    var message = choice.message;
+    
+    // ★ معالجة استدعاءات الأدوات
+    if(message.tool_calls && message.tool_calls.length > 0) {
+      return handleToolCalls(sp, msgs, message);
+    }
+    
+    return message.content.trim();
+  })
+  .catch(function(e){
+    if(e.name === 'AbortError') return null;
+    throw e;
+  });
+}
+
+// ★ معالجة استدعاءات الأدوات
+async function handleToolCalls(sp, msgs, assistantMessage) {
+  var toolCalls = assistantMessage.tool_calls || [];
+  var toolResults = [];
+  
+  // ★ تنفيذ كل أداة
+  for(var i = 0; i < toolCalls.length; i++) {
+    var tc = toolCalls[i];
+    var fn = tc.function;
+    var toolName = fn.name;
+    var args = {};
+    try {
+      args = JSON.parse(fn.arguments || '{}');
+    } catch(e) {
+      args = {};
+    }
+    
+    // ★ التحقق من أن الأداة مفعّلة
+    var toolEnabled = tools.some(function(t) { return t.name === toolName && t.enabled; });
+    if(!toolEnabled) {
+      toolResults.push({
+        tool_call_id: tc.id,
+        role: 'tool',
+        content: JSON.stringify({ error: 'الأداة ' + toolName + ' غير مفعّلة' })
+      });
+      continue;
+    }
+    
+    try {
+      // ★ استدعاء الأداة من الباك اند
+      var result = await callBackendTool(toolName, args);
+      var resultStr = typeof result === 'string' ? result : JSON.stringify(result, null, 2);
+      
+      // ★ عرض نتيجة الأداة في الدردشة
+      addMsg('🔧 استخدمت أداة **' + toolName + '**:\n' + resultStr.slice(0, 500), sp.id, 'system');
+      
+      toolResults.push({
+        tool_call_id: tc.id,
+        role: 'tool',
+        content: resultStr
+      });
+    } catch(error) {
+      toolResults.push({
+        tool_call_id: tc.id,
+        role: 'tool',
+        content: JSON.stringify({ error: error.message })
+      });
+    }
+  }
+  
+  // ★ إعادة الاستدعاء مع نتائج الأدوات
+  var newMsgs = msgs.slice();
+  newMsgs.push({ role: 'assistant', content: assistantMessage.content || '', tool_calls: toolCalls });
+  toolResults.forEach(function(tr) { newMsgs.push(tr); });
+  
+  // ★ الطلب النهائي مع نتائج الأدوات
+  var body = {
+    model: sp.model,
+    messages: [{role:'system',content:getPrompt(sp)}].concat(newMsgs),
+    temperature: 0.7,
+    max_tokens: 500,
+    top_p: 0.9
+  };
+  
+  var enabledTools = getEnabledTools();
+  if(enabledTools.length > 0) {
+    body.tools = enabledTools;
+    body.tool_choice = 'auto';
+  }
+  
+  var response = await fetch(API_URL, {
+    method:'POST',
+    headers:{'Content-Type':'application/json','Authorization':'Bearer '+apiKey},
+    body:JSON.stringify(body),
+    signal:abortC.signal
+  });
+  
+  if(!response.ok) {
+    var err = await response.json().catch(function(){return{}});
+    throw new Error(err.error && err.error.message ? err.error.message : 'HTTP '+response.status);
+  }
+  
+  var data = await response.json();
+  rRec(sp.model);
+  updateRateBars();
+  return data.choices[0].message.content.trim();
+}
+
+function buildMsgs(sp, interruptMsg){
+  var ctx='نوع الاستشارة: '+modeName()+'\nالحالة الطبية: "'+topic+'"';
+  if(interruptMsg)ctx+='\n\nالمريض يضيف: "'+interruptMsg+'" — ردّ مباشرة على ذلك.';
+  ctx+='\n\nيمكنك استخدام الأدوات المتاحة عند الحاجة.';
+  ctx+='\n\nشارك برأيك من منظور تخصصك.';
+  var msgs=[{role:'user',content:ctx}];
+  hist.forEach(function(m){
+    msgs.push({role:m.specId===sp.id?'assistant':'user',content:m.content});
+  });
+  if(hist.length===0)msgs.push({role:'user',content:'ابدأ تقييمك للحالة.'});
+  return msgs;
+}
+
+function buildSumMsgs(sumSp){
+  var ctx='نوع الاستشارة: '+modeName()+'\nالحالة: "'+topic+'"\n\nما قاله المتخصصون:\n';
+  hist.forEach(function(m){ctx+=m.content+'\n'});
+  ctx+='\n\nلخّص الاستشارة الآن.';
+  return [{role:'user',content:ctx}];
+}
+
+function modeName(){
+  var names={diagnosis:'تشخيص الأعراض',treatment:'خيارات العلاج',herbal:'الطب الطبيعي والأعشاب',prevention:'الوقاية والمناعة',nutrition:'التغذية والحمية',emergency:'حالة طارئة',chronic:'إدارة أمراض مزمنة'};
+  return names[mode]||mode;
+}
+
+// ══════════════════════════════════════════════════
+// SUMMARY
+// ══════════════════════════════════════════════════
+function triggerSummary(){
+  var sumSp=getSummarizer();
+  if(!sumSp){sysMsg('💡 فعّل "الملخّص الطبي" من قائمة المتخصصين أولاً!');return}
+  if(hist.length<2){sysMsg('⚠️ لا يكفي الحوار بعد للتلخيص.');return}
+  doSummary(sumSp,null);
+}
+
+function doSummary(sumSp,callback){
+  setStatus('summary');showTyping(sumSp);
+  var msgs=buildSumMsgs(sumSp);
+  callAPI(sumSp,msgs).then(function(resp){
+    hideTyping();
+    if(!resp)return;
+    addMsg(resp,sumSp.id,'summary');
+    msgsSinceSum=0;
+    if(globalSpk)return speakText(resp,sumSp,'sum').then(callback||function(){});
+    if(callback)callback();
+  }).catch(function(e){hideTyping();if(e.name!=='AbortError')sysMsg('❌ خطأ في الملخص: '+(e.message||''));if(callback)callback()});
+}
+
+// ══════════════════════════════════════════════════
+// SESSION LOOP
+// ══════════════════════════════════════════════════
+function getWait(){
+  if(spdMode==='eco')return 6000+Math.random()*3000;
+  if(spdMode==='turbo')return 1200+Math.random()*1500;
+  return 3000+Math.random()*2000;
+}
+function sleep(ms){return new Promise(function(r){setTimeout(r,ms)})}
+
+function sessionStep(){
+  if(!running||paused)return;
+  var specs=activeSpecs();
+  if(specs.length<2){sysMsg('⚠️ يجب تفعيل متخصصين على الأقل!');setStatus('stopped');return}
+  var sumSp=getSummarizer();
+  if(sumSp&&msgsSinceSum>=sumSp.summaryEvery&&hist.length>0){
+    msgsSinceSum=0;
+    doSummary(sumSp,function(){if(running&&!paused)debTimer=setTimeout(sessionStep,getWait())});
+    return;
+  }
+  var sp=specs[turn%specs.length];
+  if(!rCan(sp.model)){setStatus('rateWait');sysMsg('⏳ انتظار حد الطلبات...');debTimer=setTimeout(sessionStep,5000+rDly(sp.model));return}
+  var delay=rDly(sp.model);
+  var doStep=function(){
+    if(!running||paused)return;
+    setStatus('typing',sp.id);showTyping(sp);
+    callAPI(sp,buildMsgs(sp)).then(function(resp){
+      hideTyping();if(resp===null)return;if(!running||paused)return;
+      var mid=addMsg(resp,sp.id,'bot');
+      if(globalSpk){return speakText(resp,sp,mid).then(function(){turn=(turn+1)%specs.length;setStatus('active');debTimer=setTimeout(sessionStep,getWait())})}
+      turn=(turn+1)%specs.length;setStatus('active');debTimer=setTimeout(sessionStep,getWait());
+    }).catch(function(e){
+      hideTyping();
+      var em=e.message||'خطأ';
+      if(em.indexOf('Failed to fetch')>=0)em='فشل الاتصال — تأكد من مفتاح API';
+      addMsg('❌ ('+sp.name+'): '+em,null,'system');
+      turn=(turn+1)%specs.length;setStatus('active');debTimer=setTimeout(sessionStep,4000);
+    });
+  };
+  if(delay>0)setTimeout(doStep,delay);else doStep();
+}
+
+// ══════════════════════════════════════════════════
+// CONTROLS
+// ══════════════════════════════════════════════════
+function startSession(){
+  topic=document.getElementById('topicInp').value.trim();
+  mode=document.getElementById('modesel').value;
+  if(!apiKey){openSettings();return}
+  if(!topic){var inp=document.getElementById('topicInp');inp.style.borderColor='var(--red)';setTimeout(function(){inp.style.borderColor='var(--border)'},2000);return}
+  if(activeSpecs().length<2){sysMsg('⚠️ فعّل متخصصين على الأقل!');return}
+  
+  // ★ تحميل الأدوات إذا لم تكن محملة
+  if(!toolsLoaded && !toolsLoading) {
+    loadTools(false);
+  }
+  
+  newSession(false);
+  running=true;paused=false;turn=0;msgsSinceSum=0;
+  var names=activeSpecs().map(function(s){return s.emoji+' '+s.name}).join('، ');
+  var sumSp=getSummarizer();
+  if(sumSp)names+=' + '+sumSp.emoji+' الملخّص الطبي (كل '+sumSp.summaryEvery+' مداخلات)';
+  sysMsg('🩺 '+modeName()+': "'+topic+'" — المتخصصون: '+names);
+  
+  var toolCount = getEnabledTools().length;
+  if(toolCount > 0) sysMsg('🔧 ' + toolCount + ' أداة مفعّلة — سيستخدمها المتخصصون عند الحاجة.');
+  
+  setStatus('active');
+  debTimer=setTimeout(sessionStep,800);
+}
+
+function pauseSession(){if(!running)return;paused=true;if(abortC)try{abortC.abort()}catch(e){}if(debTimer)clearTimeout(debTimer);stopSpk();hideTyping();setStatus('paused');sysMsg('⏸ توقفت الاستشارة مؤقتاً')}
+function resumeSession(){if(!running||!paused)return;paused=false;setStatus('active');sysMsg('▶ تابعت الاستشارة');debTimer=setTimeout(sessionStep,1200)}
+
+function newSession(msg){
+  running=false;paused=false;
+  if(abortC)try{abortC.abort()}catch(e){}
+  if(debTimer)clearTimeout(debTimer);
+  stopSpk();hideTyping();hist=[];msgN=0;turn=0;msgsSinceSum=0;
+  document.getElementById('chatBox').innerHTML='<div class="txc" id="welcomeMsg" style="padding:36px 10px"><div style="font-size:46px;margin-bottom:10px;filter:drop-shadow(0 0 20px rgba(74,158,107,.4))">🌿</div><div style="font-size:15px;font-weight:700;color:var(--text2);margin-bottom:5px;font-family:Amiri,serif">ملتقى الأطباء والحكماء</div><div style="font-size:11px;color:var(--text3);max-width:320px;margin:0 auto;line-height:1.7">صف أعراضك واضغط ابدأ</div></div>';
+  setStatus('stopped');
+}
+
+function interrupt(){
+  var inp=document.getElementById('intInp');
+  var msg=inp.value.trim();
+  if(!msg)return;
+  if(!running){sysMsg('⚠️ ابدأ الاستشارة أولاً');return}
+  if(abortC)try{abortC.abort()}catch(e){}
+  if(debTimer)clearTimeout(debTimer);
+  stopSpk();hideTyping();paused=true;setStatus('typing',null);
+  addMsg(msg,null,'user');inp.value='';
+  sysMsg('✋ المريض أضاف معلومة — المتخصصون يردّون...');
+  var specs=activeSpecs();var idx=0;
+  function next(){
+    if(idx>=Math.min(specs.length,3)){paused=false;setStatus('active');sysMsg('🔄 يعود النقاش التلقائي...');debTimer=setTimeout(sessionStep,2000);return}
+    var sp=specs[idx++];
+    if(!rCan(sp.model)){sysMsg('⏳ '+sp.name+' ينتظر...');next();return}
+    showTyping(sp);setStatus('typing',sp.id);
+    callAPI(sp,buildMsgs(sp,msg)).then(function(resp){
+      hideTyping();if(!resp){next();return}
+      var mid=addMsg(resp,sp.id,'bot');
+      if(globalSpk)return speakText(resp,sp,mid).then(function(){return sleep(600)}).then(next);
+      return sleep(600).then(next);
+    }).catch(function(e){hideTyping();if(e.name!=='AbortError')addMsg('❌ '+sp.name+': '+(e.message||''),null,'system');next()});
+  }
+  next();
+}
+
+function onModeChange(val){
+  mode=val;
+  var placeholders={
+    diagnosis:'مثال: عندي صداع شديد مع حمى منذ يومين وألم في الحلق',
+    treatment:'مثال: تشخّص لديّ التهاب الجيوب الأنفية — ما العلاج؟',
+    herbal:'مثال: أريد علاجاً طبيعياً لارتفاع ضغط الدم',
+    prevention:'مثال: كيف أقوي مناعتي في فصل الشتاء؟',
+    nutrition:'مثال: أعاني من السكري — ما النظام الغذائي المناسب؟',
+    emergency:'مثال: ألم حاد في الصدر ينتشر للذراع الأيسر',
+    chronic:'مثال: أعاني من الربو منذ 10 سنوات — كيف أديره أفضل؟'
+  };
+  document.getElementById('topicInp').placeholder=placeholders[val]||'صف الأعراض أو المشكلة...';
+}
+
+function exportChat(){
+  if(hist.length===0){sysMsg('📭 لا يوجد حوار للتصدير');return}
+  var txt='ملتقى الأطباء والحكماء\n';
+  txt+='نوع الاستشارة: '+modeName()+'\n';
+  txt+='الحالة: '+topic+'\n';
+  txt+='═══════════════════════\n\n';
+  hist.forEach(function(m){txt+=m.content+'\n\n'});
+  try{var b=new Blob([txt],{type:'text/plain;charset=utf-8'});var u=URL.createObjectURL(b);var a=document.createElement('a');a.href=u;a.download='medical_consult.txt';a.click()}
+  catch(e){sysMsg('❌ لا يمكن التصدير')}
+}
+
+// ══════════════════════════════════════════════════
+// MODEL TEST
+// ══════════════════════════════════════════════════
+var testResults={};
+
+function openTestModal(){
+  renderModelList();
+  document.getElementById('testOverlay').classList.add('open');
+}
+function closeTestModal(){document.getElementById('testOverlay').classList.remove('open')}
+
+function renderModelList(){
+  var html=ALL_MODELS.map(function(m){
+    var r=testResults[m.id];
+    var stClass=r===undefined?'ms-idle':r===null?'ms-testing':r?'ms-ok':'ms-fail';
+    var stIcon=r===undefined?'⭕':r===null?'⏳':r?'✅':'❌';
+    return '<div class="model-row" id="mrow-'+m.id.replace(/\//g,'_')+'">'+
+      '<div class="model-info">'+
+      '<div class="model-name">'+m.name+'</div>'+
+      '<div class="model-id">'+m.id+'</div>'+
+      '</div>'+
+      '<div class="model-status '+stClass+'" id="mst-'+m.id.replace(/\//g,'_')+'">'+stIcon+'</div>'+
+      '</div>';
+  }).join('');
+  document.getElementById('modelList').innerHTML=html;
+}
+
+async function testAllModels(){
+  if(!apiKey){showKeyMsg('❌ أدخل مفتاح API أولاً','#ef4444');openSettings();return}
+  document.getElementById('testFill').style.width='0%';
+  for(var i=0;i<ALL_MODELS.length;i++){
+    var m=ALL_MODELS[i];
+    var safeId=m.id.replace(/\//g,'_');
+    var stEl=document.getElementById('mst-'+safeId);
+    if(stEl){stEl.className='model-status ms-testing';stEl.textContent='⏳'}
+    testResults[m.id]=null;
+    try{
+      var resp=await fetch(API_URL,{
+        method:'POST',
+        headers:{'Content-Type':'application/json','Authorization':'Bearer '+apiKey},
+        body:JSON.stringify({model:m.id,messages:[{role:'user',content:'قل: مرحبا'}],max_tokens:20,temperature:0.1})
+      });
+      var data=await resp.json();
+      var ok=!!(data.choices&&data.choices[0]&&data.choices[0].message);
+      testResults[m.id]=ok;
+      if(stEl){stEl.className='model-status '+(ok?'ms-ok':'ms-fail');stEl.textContent=ok?'✅':'❌'}
+    }catch(e){
+      testResults[m.id]=false;
+      if(stEl){stEl.className='model-status ms-fail';stEl.textContent='❌'}
+    }
+    document.getElementById('testFill').style.width=Math.round((i+1)/ALL_MODELS.length*100)+'%';
+    await new Promise(function(r){setTimeout(r,400)});
+  }
+  var ok=Object.values(testResults).filter(function(v){return v===true}).length;
+  sysMsg('✅ فحص مكتمل: '+ok+' نموذج يعمل من أصل '+ALL_MODELS.length);
+}
+
+// ══════════════════════════════════════════════════
+// SETTINGS
+// ══════════════════════════════════════════════════
+function openSettings(){
+  document.getElementById('apiKeyInp').value=apiKey||'';
+  var sel=document.getElementById('defaultModelSel');
+  sel.innerHTML=ALL_MODELS.map(function(m){return '<option value="'+m.id+'" '+(m.id===DEFAULT_MODEL?'selected':'')+'>'+m.name+'</option>'}).join('');
+  document.getElementById('settingsOverlay').classList.add('open');
+}
+function closeSettings(){document.getElementById('settingsOverlay').classList.remove('open')}
+function saveKey(){
+  var k=document.getElementById('apiKeyInp').value.trim();
+  if(!k){showKeyMsg('❌ أدخل المفتاح','#ef4444');return}
+  apiKey=k;try{localStorage.setItem('med_key',k)}catch(e){}
+  DEFAULT_MODEL=document.getElementById('defaultModelSel').value;
+  showKeyMsg('✅ تم الحفظ!','#4a9e6b');setTimeout(closeSettings,1000);
+}
+function showKeyMsg(m,c){var e=document.getElementById('keyStatus');if(e){e.textContent=m;e.style.color=c;setTimeout(function(){e.textContent=''},3000)}}
+
+// ══════════════════════════════════════════════════
+// UI TOGGLES
+// ══════════════════════════════════════════════════
+function toggleSpk(){
+  globalSpk=!globalSpk;
+  var btn=document.getElementById('spkBtn');
+  btn.textContent=globalSpk?'🔊 الصوت مفعّل':'🔇 الصوت';
+  btn.style.color=globalSpk?'#6bc98a':'var(--text2)';
+  if(!globalSpk)stopSpk();
+}
+function cycleSpeed(){
+  var modes=['eco','normal','turbo'];
+  var labels=['🐢 اقتصادي','🚗 عادي','🚀 سريع'];
+  var i=modes.indexOf(spdMode);i=(i+1)%3;spdMode=modes[i];
+  var btn=document.getElementById('spdBtn');btn.textContent=labels[i];
+}
+
+// ══════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════
+try{var k=localStorage.getItem('med_key');if(k){apiKey=k;document.getElementById('apiKeyInp').value=k}}catch(e){}
+renderChips();
+updateRateBars();
+onModeChange('diagnosis');
+
+// ★ إضافة أدوات التفعيل في الواجهة
+// إضافة زر تحديث الأدوات
+var toolsPopup = document.querySelector('.tools-popup .phdr');
+if(toolsPopup) {
+  var reloadBtn = document.createElement('button');
+  reloadBtn.className = 'btn btn-sm';
+  reloadBtn.innerHTML = '⟳ تحديث';
+  reloadBtn.onclick = function() { loadTools(true); };
+  toolsPopup.appendChild(reloadBtn);
+}
+
+// ★ تحميل الأدوات في الخلفية
+setTimeout(function() {
+  if(!toolsLoaded && !toolsLoading) {
+    loadTools(false);
+  }
+}, 2000);
+
+// ★ إضافة badge لعدد الأدوات المفعّلة
+var toolbar = document.querySelector('.hdr-btns');
+if(toolbar) {
+  var badge = document.createElement('span');
+  badge.id = 'toolCountBadge';
+  badge.style.cssText = 'font-size:10px;color:#5eead4;background:rgba(45,158,143,.15);border:1px solid rgba(45,158,143,.2);border-radius:10px;padding:2px 8px;display:none';
+  toolbar.appendChild(badge);
+  updateToolCount();
+}
+
+</script>
+</body>
+</html>
